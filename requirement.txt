@@ -1,0 +1,10 @@
+speechrecognition
+edge-tts
+pygame
+anthropic
+requests
+pyaudio
+pyautogui
+pycaw
+comtypes
+screen-brightness-control
