@@ -1,4 +1,4 @@
-from fastapi import FastAPI , status , HTTPException,Request
+from fastapi import FastAPI , status , HTTPException,Request,Depends,Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 app= FastAPI()
@@ -263,24 +263,68 @@ class Usernotfound(Exception):
     def __init__(self, name:str):
         self.name=name
 
+#  GLobal + Exceptional error handling 
 
-@app.exception_handler(Usernotfound)
-def User_not_found(request:Request ,exc:Usernotfound):
-    return JSONResponse(
-        status_code=404,
-        content={
-            "status":"Error",
-            "message":f"User {exc.name} not found"
-        }
-    )
+# @app.exception_handler(Usernotfound)
+# def User_not_found(request:Request ,exc:Usernotfound):
+#     return JSONResponse(
+#         status_code=404,
+#         content={
+#             "status":"Error",
+#             "message":f"User {exc.name} not found"
+#         }
+#     )
     
 
-@app.get("/users/{name}")
-def get_user(name:str):
-    if name != "ahsan":
-        raise Usernotfound(name)
+# @app.get("/users/{name}")
+# def get_user(name:str):
+#     if name != "ahsan":
+#         raise Usernotfound(name)
+#     return{
+#         "name":name
+    # }
+
+'''  Dependency injection  '''
+# Dependency Injection is a technique used to execute common logic automatically within your functions
+
+
+# def logic ():
+#     return{
+#         "Message":"Depends logic work"
+#     }
+
+# @app.get("/home")
+# def home (data= Depends(logic)):
+#     return data
+
+
+
+# def employes():
+#     return {
+#         "Name":"Ahsan ( Ai Engineer )"
+#     }
+
+# @app.get ("/Employe")
+# def Employe (data=Depends(employes)):
+#     return data
+
+# @app.get ("/dashboad")
+# def dashbaord (dash=Depends(employes)):
+#     return dash
+
+
+def auth (token:str = Header(None)):
+    if token != "Ahsan":
+        raise HTTPException(
+            status_code=401,
+            detail="unthorized"
+        )
     return{
-        "name":name
+        "User":" Secure Authorized User"
     }
-            
-        
+@app.get ("/secure_data")
+def secure(security=Depends(auth)):
+    return{
+        "Message":"User accessed",
+        "user":security
+    }
